@@ -1,0 +1,215 @@
+<script setup lang="ts">
+import { reactive, watch } from 'vue'
+import { useCashFlowsStore } from '../states/cashFlowsStore'
+import { showSuccessDialog, showErrorDialog } from '../../../helpers/toolsHelper'
+
+const props = defineProps<{
+  isOpen: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'success'): void
+}>()
+
+const store = useCashFlowsStore()
+
+const form = reactive({
+  type: 'inflow' as 'inflow' | 'outflow',
+  source: 'cash' as 'cash' | 'savings' | 'loans',
+  label: '',
+  nominal: 0,
+  description: '',
+})
+
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (open) {
+      form.type = 'inflow'
+      form.source = 'cash'
+      form.label = ''
+      form.nominal = 0
+      form.description = ''
+    }
+  }
+)
+
+async function submit() {
+  if (!form.label.trim()) {
+    showErrorDialog('Validasi Gagal', 'Label transaksi wajib diisi')
+    return
+  }
+  if (!form.nominal || form.nominal <= 0) {
+    showErrorDialog('Validasi Gagal', 'Nominal harus lebih dari 0')
+    return
+  }
+
+  const res = await store.asyncAddCashFlow({
+    type: form.type,
+    source: form.source,
+    label: form.label.trim(),
+    nominal: Number(form.nominal),
+    description: form.description.trim(),
+  })
+
+  if (res?.success || res?.status === 'success') {
+    showSuccessDialog('Berhasil', res?.message || 'Transaksi berhasil ditambahkan')
+    emit('success')
+    emit('close')
+  } else {
+    showErrorDialog('Gagal', res?.message || 'Gagal menambahkan transaksi')
+  }
+}
+</script>
+
+<template>
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div
+      data-testid="add-modal-backdrop"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+      @click="$emit('close')"
+    ></div>
+
+    <!-- Modal Box -->
+    <div
+      class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-modal-title"
+    >
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <h3 id="add-modal-title" class="text-lg font-bold text-slate-900">
+          Tambah Transaksi Baru
+        </h3>
+        <button
+          type="button"
+          aria-label="Tutup"
+          class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          @click="$emit('close')"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <form class="space-y-4 mt-4" @submit.prevent="submit">
+        <!-- Tipe Transaksi -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Tipe Transaksi</label>
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              :class="[
+                'rounded-lg py-2.5 text-sm font-semibold border transition-all text-center',
+                form.type === 'inflow'
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-500/20'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
+              ]"
+              @click="form.type = 'inflow'"
+            >
+              + Pemasukan (Inflow)
+            </button>
+            <button
+              type="button"
+              :class="[
+                'rounded-lg py-2.5 text-sm font-semibold border transition-all text-center',
+                form.type === 'outflow'
+                  ? 'border-rose-600 bg-rose-50 text-rose-700 ring-2 ring-rose-500/20'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50',
+              ]"
+              @click="form.type = 'outflow'"
+            >
+              - Pengeluaran (Outflow)
+            </button>
+          </div>
+        </div>
+
+        <!-- Sumber Dana -->
+        <div>
+          <label for="add-source" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            Sumber Dana
+          </label>
+          <select
+            id="add-source"
+            v-model="form.source"
+            aria-label="Sumber Dana"
+            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <option value="cash">Tunai (Cash)</option>
+            <option value="savings">Tabungan (Savings)</option>
+            <option value="loans">Pinjaman (Loans)</option>
+          </select>
+        </div>
+
+        <!-- Label / Kategori -->
+        <div>
+          <label for="add-label" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            Label / Kategori
+          </label>
+          <input
+            id="add-label"
+            v-model="form.label"
+            type="text"
+            placeholder="cth: Gaji, Belanja, Transportasi"
+            aria-label="Label"
+            required
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <!-- Nominal -->
+        <div>
+          <label for="add-nominal" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            Nominal (Rp)
+          </label>
+          <input
+            id="add-nominal"
+            v-model.number="form.nominal"
+            type="number"
+            min="1"
+            placeholder="0"
+            aria-label="Nominal"
+            required
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <!-- Deskripsi -->
+        <div>
+          <label for="add-description" class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+            Deskripsi (Opsional)
+          </label>
+          <textarea
+            id="add-description"
+            v-model="form.description"
+            rows="3"
+            placeholder="Catatan tambahan transaksi..."
+            aria-label="Deskripsi"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+          ></textarea>
+        </div>
+
+        <!-- Tombol Aksi -->
+        <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <button
+            type="button"
+            class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            @click="$emit('close')"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            :disabled="store.isCashFlowAdd"
+            class="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            {{ store.isCashFlowAdd ? 'Menyimpan...' : 'Simpan Transaksi' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
