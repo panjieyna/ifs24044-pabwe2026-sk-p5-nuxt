@@ -73,6 +73,21 @@ export default defineNuxtConfig({
         },
         { rel: 'dns-prefetch', href: 'https://open-api.delcom.org' },
       ],
+      script: [
+        {
+          children: `
+            if ('onpageshow' in window) {
+              window.addEventListener('pageshow', (event) => {
+                if (event.persisted) {
+                  window.location.reload();
+                }
+              });
+            }
+          `,
+          type: 'text/javascript',
+          pos: 'bodyClose',
+        },
+      ],
     },
   },
 })
