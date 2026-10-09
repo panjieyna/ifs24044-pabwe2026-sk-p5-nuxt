@@ -76,7 +76,7 @@ const submitPhoto = async (event: Event) => {
         <div>
           <h2 class="text-lg font-bold text-slate-900">{{ store.profile.name }}</h2>
           <p class="text-sm text-slate-500">{{ store.profile.email }}</p>
-          <p v-if="store.profile.created_at" class="text-xs text-slate-400 mt-1">
+          <p v-if="store.profile.created_at" class="text-xs text-slate-600 mt-1">
             Bergabung sejak: {{ store.profile.created_at }}
           </p>
         </div>

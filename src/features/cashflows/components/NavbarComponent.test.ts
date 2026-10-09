@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fireEvent } from '@testing-library/vue'
+import { nextTick } from 'vue'
 import NavbarComponent from './NavbarComponent.vue'
 import { renderWithProviders } from '../../../test-utils'
 import { useAuthStore } from '../../auth/states/authStore'
@@ -27,20 +28,22 @@ describe('NavbarComponent', () => {
     expect(emitted()['toggle-sidebar']).toBeTruthy()
   })
 
-  it('displays user profile with initials when photo is not present', () => {
+  it('displays user profile with initials when photo is not present', async () => {
     const { getByTestId, getByText } = renderWithProviders(NavbarComponent)
     const usersStore = useUsersStore()
     usersStore.profile = { id: 1, name: 'Budi Santoso', email: 'budi@delcom.org', photo: null }
+    await nextTick()
 
     expect(getByTestId('navbar-user-name')).toHaveTextContent('Budi Santoso')
     expect(getByTestId('navbar-user-email')).toHaveTextContent('budi@delcom.org')
     expect(getByText('B')).toBeInTheDocument()
   })
 
-  it('displays user profile with photo when available', () => {
+  it('displays user profile with photo when available', async () => {
     const { getByAltText } = renderWithProviders(NavbarComponent)
     const usersStore = useUsersStore()
     usersStore.profile = { id: 1, name: 'Budi Santoso', email: 'budi@delcom.org', photo: 'img/avatar.png' }
+    await nextTick()
 
     expect(getByAltText('Budi Santoso')).toBeInTheDocument()
   })

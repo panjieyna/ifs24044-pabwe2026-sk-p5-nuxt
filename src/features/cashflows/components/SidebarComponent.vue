@@ -35,6 +35,7 @@ const isActive = (path: string) => {
 
     <!-- Sidebar Container -->
     <aside
+      role="region"
       :class="[
         'fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:translate-x-0',
         isOpen ? 'translate-x-0' : '-translate-x-full',
@@ -61,7 +62,7 @@ const isActive = (path: string) => {
       </div>
 
       <nav class="flex-1 space-y-1.5 px-3 py-4 overflow-y-auto">
-        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-2">
           Menu Utama
         </p>
         <RouterLink

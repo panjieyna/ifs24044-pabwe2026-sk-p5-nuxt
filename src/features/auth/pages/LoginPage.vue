@@ -30,7 +30,7 @@ async function submit() {
 </script>
 
 <template>
-  <form class="space-y-4" @submit.prevent="submit">
+  <form class="space-y-4" novalidate @submit.prevent="submit">
     <div>
       <h2 class="text-xl font-bold text-slate-900">Masuk ke Akun Anda</h2>
       <p class="text-xs text-slate-500 mt-1">Masukkan kredensial Anda untuk melanjutkan</p>

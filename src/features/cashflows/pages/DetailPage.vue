@@ -136,28 +136,28 @@ async function handleDelete() {
       <!-- Detail Properties Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div class="rounded-xl bg-slate-50 p-4 border border-slate-100">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Sumber Dana</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-600">Sumber Dana</p>
           <p class="mt-1 font-semibold text-slate-800 uppercase" data-testid="detail-source">
             {{ store.cashFlow.source }}
           </p>
         </div>
 
         <div class="rounded-xl bg-slate-50 p-4 border border-slate-100">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">ID Transaksi</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-600">ID Transaksi</p>
           <p class="mt-1 font-semibold text-slate-800" data-testid="detail-id">
             #{{ store.cashFlow.id }}
           </p>
         </div>
 
         <div class="rounded-xl bg-slate-50 p-4 border border-slate-100">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Tanggal Pencatatan</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-600">Tanggal Pencatatan</p>
           <p class="mt-1 font-semibold text-slate-800" data-testid="detail-created-at">
             {{ formatDate(store.cashFlow.created_at) }}
           </p>
         </div>
 
         <div class="rounded-xl bg-slate-50 p-4 border border-slate-100">
-          <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Terakhir Diperbarui</p>
+          <p class="text-xs font-bold uppercase tracking-wider text-slate-600">Terakhir Diperbarui</p>
           <p class="mt-1 font-semibold text-slate-800" data-testid="detail-updated-at">
             {{ formatDate(store.cashFlow.updated_at) }}
           </p>
@@ -166,7 +166,7 @@ async function handleDelete() {
 
       <!-- Description Section -->
       <div class="rounded-xl bg-slate-50 p-5 border border-slate-100">
-        <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Deskripsi / Catatan</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Deskripsi / Catatan</p>
         <p class="text-sm text-slate-700 whitespace-pre-line leading-relaxed" data-testid="detail-description">
           {{ store.cashFlow.description || 'Tidak ada catatan tambahan untuk transaksi ini.' }}
         </p>

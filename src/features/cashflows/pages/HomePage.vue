@@ -280,7 +280,7 @@ const loansBalance = computed(() => {
       class="rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center"
       data-testid="cashflows-empty"
     >
-      <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-lg mb-3">
+      <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg mb-3">
         Ø
       </div>
       <h3 class="text-base font-semibold text-slate-900">Belum ada catatan arus kas</h3>
@@ -374,7 +374,7 @@ const loansBalance = computed(() => {
             >
               {{ item.type === 'inflow' ? '+ Inflow' : '- Outflow' }}
             </span>
-            <span class="text-xs text-slate-400">{{ formatDate(item.created_at) }}</span>
+            <span class="text-xs text-slate-600">{{ formatDate(item.created_at) }}</span>
           </div>
 
           <div class="flex items-center justify-between">

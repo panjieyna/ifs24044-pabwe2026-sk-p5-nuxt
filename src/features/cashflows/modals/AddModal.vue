@@ -86,7 +86,7 @@ async function submit() {
         <button
           type="button"
           aria-label="Tutup"
-          class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+          class="rounded-lg p-1 text-slate-600 hover:bg-slate-100 hover:text-slate-600"
           @click="$emit('close')"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,7 +95,7 @@ async function submit() {
         </button>
       </div>
 
-      <form class="space-y-4 mt-4" @submit.prevent="submit">
+      <form class="space-y-4 mt-4" novalidate @submit.prevent="submit">
         <!-- Tipe Transaksi -->
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Tipe Transaksi</label>

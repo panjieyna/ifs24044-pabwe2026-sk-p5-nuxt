@@ -57,7 +57,7 @@ const filteredUsers = computed(() => {
       class="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center"
       data-testid="users-empty"
     >
-      <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-lg mb-3">
+      <div class="mx-auto h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-lg mb-3">
         ?
       </div>
       <h3 class="text-base font-semibold text-slate-900">Tidak ada pengguna ditemukan</h3>
@@ -89,7 +89,7 @@ const filteredUsers = computed(() => {
         <div class="min-w-0 flex-1">
           <h2 class="text-sm font-semibold text-slate-900 truncate">{{ user.name }}</h2>
           <p class="text-xs text-slate-500 truncate mt-0.5">{{ user.email }}</p>
-          <p v-if="user.created_at" class="text-[11px] text-slate-400 mt-1">
+          <p v-if="user.created_at" class="text-[11px] text-slate-600 mt-1">
             Bergabung {{ formatDate(user.created_at) }}
           </p>
         </div>
