@@ -15,6 +15,19 @@ export default defineNuxtConfig({
     define: {
       DELCOM_BASEURL: JSON.stringify(process.env.VITE_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1'),
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'vendor-vue': ['vue', 'vue-router', 'pinia'],
+            'vendor-ui': ['lucide-vue-next', 'sweetalert2'],
+            'vendor-utils': ['ofetch', 'ufo', 'defu', 'klona', 'ohash', 'scule'],
+          },
+        },
+      },
+      cssCodeSplit: true,
+      minify: 'esbuild',
+    },
   },
   runtimeConfig: {
     public: {
@@ -47,9 +60,18 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
+          rel: 'preload',
+          as: 'style',
+          href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap',
+          fetchpriority: 'high',
+        },
+        {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap',
+          media: 'print',
+          onload: "this.media='all'",
         },
+        { rel: 'dns-prefetch', href: 'https://open-api.delcom.org' },
       ],
     },
   },
