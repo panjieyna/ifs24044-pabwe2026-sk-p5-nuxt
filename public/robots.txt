@@ -1,12 +1,11 @@
 # Delcom Cash Flow - robots.txt
 User-agent: *
 Allow: /
+Disallow: /auth/
 
 # Sitemap
 Sitemap: https://ifs24044-pabwe2026-sk-p5-nuxt.vercel.app/sitemap.xml
 
-# Disallow private/auth routes
-Disallow: /auth/
-Disallow: /cash-flows/
-Disallow: /users
-Disallow: /profile
+# Disallow private auth routes only
+Disallow: /auth/login
+Disallow: /auth/register
