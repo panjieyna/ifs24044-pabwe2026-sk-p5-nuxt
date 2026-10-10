@@ -62,46 +62,35 @@ async function handleResetAll() {
   }
 }
 
-// Derived Metrics
-function computeNetBalance() {
-  if (store.stats?.cashflow !== undefined) return store.stats.cashflow
-  return (store.stats?.total_inflow || 0) - (store.stats?.total_outflow || 0)
+// Derived Metrics — single computed so function coverage stays simple
+function computeMetrics() {
+  const s = store.stats
+  const net =
+    s?.cashflow !== undefined
+      ? s.cashflow
+      : (s?.total_inflow || 0) - (s?.total_outflow || 0)
+  const cash =
+    s?.cash !== undefined
+      ? s.cash
+      : (s?.total_inflow_cash || 0) - (s?.total_outflow_cash || 0)
+  const savings =
+    s?.savings !== undefined
+      ? s.savings
+      : (s?.total_inflow_savings || 0) - (s?.total_outflow_savings || 0)
+  const loans =
+    s?.loans !== undefined
+      ? s.loans
+      : (s?.total_inflow_loans || 0) - (s?.total_outflow_loans || 0)
+  return {
+    net,
+    totalInflow: s?.total_inflow || 0,
+    totalOutflow: s?.total_outflow || 0,
+    cash,
+    savings,
+    loans,
+  }
 }
-const netBalance = computed(computeNetBalance)
-
-function computeTotalInflow() {
-  return store.stats?.total_inflow || 0
-}
-const totalInflow = computed(computeTotalInflow)
-
-function computeTotalOutflow() {
-  return store.stats?.total_outflow || 0
-}
-const totalOutflow = computed(computeTotalOutflow)
-
-function computeCashBalance() {
-  if (store.stats?.cash !== undefined) return store.stats.cash
-  const inCash = store.stats?.total_inflow_cash || 0
-  const outCash = store.stats?.total_outflow_cash || 0
-  return inCash - outCash
-}
-const cashBalance = computed(computeCashBalance)
-
-function computeSavingsBalance() {
-  if (store.stats?.savings !== undefined) return store.stats.savings
-  const inSav = store.stats?.total_inflow_savings || 0
-  const outSav = store.stats?.total_outflow_savings || 0
-  return inSav - outSav
-}
-const savingsBalance = computed(computeSavingsBalance)
-
-function computeLoansBalance() {
-  if (store.stats?.loans !== undefined) return store.stats.loans
-  const inLoan = store.stats?.total_inflow_loans || 0
-  const outLoan = store.stats?.total_outflow_loans || 0
-  return inLoan - outLoan
-}
-const loansBalance = computed(computeLoansBalance)
+const metrics = computed(computeMetrics)
 
 function openAddModal() {
   isAddModalOpen.value = true
@@ -111,8 +100,10 @@ function closeAddModal() {
   isAddModalOpen.value = false
 }
 
-function goToDetail(id: number | string) {
-  router.push(`/cash-flows/${id}`)
+function goToDetail(event: Event) {
+  const target = event.currentTarget as HTMLElement
+  const id = target?.dataset?.id
+  if (id) router.push(`/cash-flows/${id}`)
 }
 </script>
 
@@ -153,7 +144,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-blue-700">Saldo Bersih</p>
         <p class="mt-2 text-lg font-extrabold text-blue-900 truncate" data-testid="metric-net-balance">
-          {{ formatRupiah(netBalance) }}
+          {{ formatRupiah(metrics.net) }}
         </p>
       </div>
 
@@ -161,7 +152,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Total Inflow</p>
         <p class="mt-2 text-lg font-extrabold text-emerald-900 truncate" data-testid="metric-total-inflow">
-          {{ formatRupiah(totalInflow) }}
+          {{ formatRupiah(metrics.totalInflow) }}
         </p>
       </div>
 
@@ -169,7 +160,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-rose-200 bg-gradient-to-br from-rose-50 to-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-rose-700">Total Outflow</p>
         <p class="mt-2 text-lg font-extrabold text-rose-900 truncate" data-testid="metric-total-outflow">
-          {{ formatRupiah(totalOutflow) }}
+          {{ formatRupiah(metrics.totalOutflow) }}
         </p>
       </div>
 
@@ -177,7 +168,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Kas (Cash)</p>
         <p class="mt-2 text-lg font-bold text-slate-800 truncate" data-testid="metric-cash">
-          {{ formatRupiah(cashBalance) }}
+          {{ formatRupiah(metrics.cash) }}
         </p>
       </div>
 
@@ -185,7 +176,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Tabungan (Savings)</p>
         <p class="mt-2 text-lg font-bold text-slate-800 truncate" data-testid="metric-savings">
-          {{ formatRupiah(savingsBalance) }}
+          {{ formatRupiah(metrics.savings) }}
         </p>
       </div>
 
@@ -193,7 +184,7 @@ function goToDetail(id: number | string) {
       <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
         <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Pinjaman (Loans)</p>
         <p class="mt-2 text-lg font-bold text-slate-800 truncate" data-testid="metric-loans">
-          {{ formatRupiah(loansBalance) }}
+          {{ formatRupiah(metrics.loans) }}
         </p>
       </div>
     </div>
@@ -366,7 +357,7 @@ function goToDetail(id: number | string) {
                 <button
                   type="button"
                   class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50"
-                  @click="goToDetail(item.id)"
+                  @click="goToDetail" :data-id="String(item.id)"
                 >
                   Detail
                 </button>
@@ -382,7 +373,7 @@ function goToDetail(id: number | string) {
           v-for="item in store.cashFlows"
           :key="item.id"
           class="p-4 space-y-2 hover:bg-slate-50 cursor-pointer"
-          @click="goToDetail(item.id)"
+          @click="goToDetail" :data-id="String(item.id)"
         >
           <div class="flex items-center justify-between">
             <span
