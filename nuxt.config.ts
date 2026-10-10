@@ -8,12 +8,18 @@ export default defineNuxtConfig({
   },
   srcDir: 'src/',
   ssr: false,
+
+  // Matikan DevTools agar production build tidak error simple-git
+  devtools: { enabled: false },
+
   modules: ['@pinia/nuxt'],
   css: ['~/index.css'],
   vite: {
     plugins: [tailwindcss()],
     define: {
-      DELCOM_BASEURL: JSON.stringify(process.env.VITE_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1'),
+      DELCOM_BASEURL: JSON.stringify(
+        process.env.VITE_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1'
+      ),
     },
     build: {
       rollupOptions: {
@@ -31,7 +37,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      delcomBaseUrl: process.env.VITE_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1',
+      delcomBaseUrl:
+        process.env.VITE_DELCOM_BASEURL || 'https://open-api.delcom.org/api/v1',
     },
   },
   devServer: {
@@ -45,16 +52,34 @@ export default defineNuxtConfig({
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Delcom Cash Flow — aplikasi pencatatan arus kas untuk memantau pemasukan, pengeluaran, serta saldo kas tunai, tabungan, dan pinjaman secara real-time.' },
+        {
+          name: 'description',
+          content:
+            'Delcom Cash Flow — aplikasi pencatatan arus kas untuk memantau pemasukan, pengeluaran, serta saldo kas tunai, tabungan, dan pinjaman secara real-time.',
+        },
         { name: 'theme-color', content: '#2563eb' },
         { name: 'color-scheme', content: 'light' },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: 'Delcom Cash Flow' },
-        { property: 'og:title', content: 'Delcom Cash Flow — Pencatatan Arus Kas' },
-        { property: 'og:description', content: 'Kelola pemasukan, pengeluaran, dan saldo kas tunai, tabungan, serta pinjaman dengan mudah.' },
+        {
+          property: 'og:title',
+          content: 'Delcom Cash Flow — Pencatatan Arus Kas',
+        },
+        {
+          property: 'og:description',
+          content:
+            'Kelola pemasukan, pengeluaran, dan saldo kas tunai, tabungan, serta pinjaman dengan mudah.',
+        },
         { name: 'twitter:card', content: 'summary' },
-        { name: 'twitter:title', content: 'Delcom Cash Flow — Pencatatan Arus Kas' },
-        { name: 'twitter:description', content: 'Kelola pemasukan, pengeluaran, dan saldo kas tunai, tabungan, serta pinjaman dengan mudah.' },
+        {
+          name: 'twitter:title',
+          content: 'Delcom Cash Flow — Pencatatan Arus Kas',
+        },
+        {
+          name: 'twitter:description',
+          content:
+            'Kelola pemasukan, pengeluaran, dan saldo kas tunai, tabungan, serta pinjaman dengan mudah.',
+        },
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
