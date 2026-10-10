@@ -37,16 +37,18 @@ describe('AddModal', () => {
   })
 
   it('toggles transaction type between inflow and outflow', async () => {
-    const { getByText } = renderWithProviders(AddModal, {
-      props: { isOpen: true },
-    })
-
-    const outflowBtn = getByText(/- Pengeluaran/)
-    await fireEvent.click(outflowBtn)
-
-    const inflowBtn = getByText(/\+ Pemasukan/)
-    await fireEvent.click(inflowBtn)
+  const { getByText } = renderWithProviders(AddModal, {
+    props: { isOpen: true },
   })
+
+  const outflowBtn = getByText(/- Pengeluaran/)
+  await fireEvent.click(outflowBtn)
+  expect(outflowBtn).toBeTruthy()
+
+  const inflowBtn = getByText(/\+ Pemasukan/)
+  await fireEvent.click(inflowBtn)
+  expect(inflowBtn).toBeTruthy()
+})
 
   it('validates empty label and zero nominal', async () => {
     const { getByLabelText, getByRole } = renderWithProviders(AddModal, {

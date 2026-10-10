@@ -104,11 +104,11 @@ describe('HomePage', () => {
 
     await fireEvent.click(getByRole('button', { name: 'Tambah Transaksi' }))
     await nextTick()
-    // modal may render based on isAddModalOpen
+    expect(document.querySelector('[data-testid="add-modal-backdrop"]')).toBeTruthy()
   })
 
   it('applies and resets filters', async () => {
-    const { getByLabelText, getByRole } = renderWithProviders(HomePage)
+    const { getByLabelText } = renderWithProviders(HomePage)
     const store = useCashFlowsStore()
     const getSpy = vi.spyOn(store, 'asyncGetCashFlows').mockResolvedValue({ success: true } as any)
     vi.spyOn(store, 'asyncGetLabels').mockResolvedValue({ success: true } as any)
@@ -123,10 +123,8 @@ describe('HomePage', () => {
     await fireEvent.update(getByLabelText('Dari Tanggal'), '2024-01-01')
     await fireEvent.update(getByLabelText('Sampai Tanggal'), '2024-12-31')
 
-    // change events trigger applyFilter
     await fireEvent.change(getByLabelText('Filter Tipe'))
     expect(getSpy).toHaveBeenCalled()
-
   })
 
   it('handles reset all confirmed success', async () => {
@@ -209,16 +207,19 @@ describe('HomePage', () => {
   })
 
   it('opens add modal from empty state button', async () => {
-    const { getByRole, getByTestId } = renderWithProviders(HomePage)
+    const { getByTestId } = renderWithProviders(HomePage)
     const store = useCashFlowsStore()
     store.isLoading = false
     store.cashFlows = []
     await nextTick()
     expect(getByTestId('cashflows-empty')).toBeInTheDocument()
-    // empty state has + Tambah Transaksi button without aria-label sometimes
+
     const buttons = document.querySelectorAll('button')
     const emptyAdd = Array.from(buttons).find((b) => b.textContent?.includes('Tambah Transaksi'))
+    expect(emptyAdd).toBeTruthy()
     if (emptyAdd) await fireEvent.click(emptyAdd)
+    await nextTick()
+    expect(document.querySelector('[data-testid="add-modal-backdrop"]')).toBeTruthy()
   })
 
   it('reset all with status success and no message', async () => {
@@ -282,6 +283,7 @@ describe('HomePage', () => {
 
     const pushSpy = vi.spyOn(router, 'push')
     const detailBtns = getAllByRole('button', { name: 'Detail' })
+    expect(detailBtns.length).toBeGreaterThan(0)
     for (const btn of detailBtns) {
       await fireEvent.click(btn)
     }
@@ -289,11 +291,11 @@ describe('HomePage', () => {
 
     await fireEvent.click(getByRole('button', { name: 'Tambah Transaksi' }))
     await nextTick()
-    // close via success path is covered in modal tests; ensure open works
+    expect(document.querySelector('[data-testid="add-modal-backdrop"]')).toBeTruthy()
   })
 
   it('closes add modal via close event', async () => {
-    const { getByRole, getByTestId } = renderWithProviders(HomePage)
+    const { getByRole } = renderWithProviders(HomePage)
     const store = useCashFlowsStore()
     store.isLoading = false
     store.cashFlows = [mockCashFlow]
@@ -301,11 +303,10 @@ describe('HomePage', () => {
 
     await fireEvent.click(getByRole('button', { name: 'Tambah Transaksi' }))
     await nextTick()
-    // AddModal backdrop emits close
     const backdrop = document.querySelector('[data-testid="add-modal-backdrop"]')
-    if (backdrop) {
-      await fireEvent.click(backdrop)
-    }
+    expect(backdrop).toBeTruthy()
+    await fireEvent.click(backdrop!)
     await nextTick()
+    expect(document.querySelector('[data-testid="add-modal-backdrop"]')).toBeFalsy()
   })
 })

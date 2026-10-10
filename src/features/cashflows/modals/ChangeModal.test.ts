@@ -49,16 +49,19 @@ describe('ChangeModal', () => {
   })
 
   it('toggles transaction type between inflow and outflow', async () => {
-    const { getByText } = renderWithProviders(ChangeModal, {
-      props: { isOpen: true, cashFlow: mockCashFlow },
-    })
-
-    const inflowBtn = getByText(/\+ Pemasukan/)
-    await fireEvent.click(inflowBtn)
-
-    const outflowBtn = getByText(/- Pengeluaran/)
-    await fireEvent.click(outflowBtn)
+  const { getByText } = renderWithProviders(ChangeModal, {
+    props: { isOpen: true, cashFlow: mockCashFlow },
   })
+
+  const inflowBtn = getByText(/\+ Pemasukan/)
+  await fireEvent.click(inflowBtn)
+  expect(inflowBtn).toBeTruthy()
+
+  const outflowBtn = getByText(/- Pengeluaran/)
+  await fireEvent.click(outflowBtn)
+  expect(outflowBtn).toBeTruthy()
+  
+})
 
   it('validates empty label and zero nominal', async () => {
     const { getByLabelText, getByRole } = renderWithProviders(ChangeModal, {

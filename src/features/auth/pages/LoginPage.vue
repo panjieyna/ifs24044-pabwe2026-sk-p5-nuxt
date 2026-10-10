@@ -67,7 +67,6 @@ async function submit() {
     <button
       id="login-submit-button"
       type="submit"
-      aria-label="Masuk"
       :disabled="auth.isLoadingLogin"
       class="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
     >
