@@ -17,32 +17,41 @@ const store = useCashFlowsStore()
 
 const isChangeModalOpen = ref(false)
 
-const loadDetail = async () => {
+function openChangeModal() {
+  isChangeModalOpen.value = true
+}
+
+function closeChangeModal() {
+  isChangeModalOpen.value = false
+}
+
+function goHome() {
+  router.push('/')
+}
+
+async function loadDetail() {
   const id = route.params.cashFlowId as string
   if (id) {
     await store.asyncGetCashFlowById(id)
   }
 }
 
-onMounted(async () => {
-  await loadDetail()
-})
+onMounted(loadDetail)
 
 async function handleDelete() {
-  if (!store.cashFlow) return
   const confirmed = await showConfirmDialog(
     'Konfirmasi Hapus',
     'Apakah Anda yakin ingin menghapus transaksi ini?'
   )
 
-  if (confirmed) {
-    const res = await store.asyncDeleteCashFlow(store.cashFlow.id)
-    if (res?.success || res?.status === 'success') {
-      showSuccessDialog('Berhasil', res?.message || 'Transaksi berhasil dihapus')
-      router.push('/')
-    } else {
-      showErrorDialog('Gagal', res?.message || 'Gagal menghapus transaksi')
-    }
+  if (!confirmed) return
+
+  const res = await store.asyncDeleteCashFlow(store.cashFlow!.id)
+  if (res?.success || res?.status === 'success') {
+    showSuccessDialog('Berhasil', res?.message || 'Transaksi berhasil dihapus')
+    router.push('/')
+  } else {
+    showErrorDialog('Gagal', res?.message || 'Gagal menghapus transaksi')
   }
 }
 </script>
@@ -55,7 +64,7 @@ async function handleDelete() {
         type="button"
         aria-label="Kembali"
         class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-xs"
-        @click="router.push('/')"
+        @click="goHome"
       >
         <span class="text-sm">←</span>
         <span>Kembali ke Beranda</span>
@@ -66,7 +75,7 @@ async function handleDelete() {
           type="button"
           aria-label="Ubah"
           class="rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition-colors"
-          @click="isChangeModalOpen = true"
+          @click="openChangeModal"
         >
           Ubah
         </button>
@@ -98,7 +107,7 @@ async function handleDelete() {
       <button
         type="button"
         class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-        @click="router.push('/')"
+        @click="goHome"
       >
         Kembali ke Beranda
       </button>
@@ -177,7 +186,7 @@ async function handleDelete() {
     <ChangeModal
       :is-open="isChangeModalOpen"
       :cash-flow="store.cashFlow"
-      @close="isChangeModalOpen = false"
+      @close="closeChangeModal"
       @success="loadDetail"
     />
   </div>

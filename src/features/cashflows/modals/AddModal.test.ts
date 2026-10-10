@@ -121,4 +121,61 @@ describe('AddModal', () => {
 
     expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Server error')
   })
+
+  it('uses default success and error messages', async () => {
+    const { getByLabelText, getByRole, emitted } = renderWithProviders(AddModal, {
+      props: { isOpen: true },
+    })
+    const store = useCashFlowsStore()
+    vi.spyOn(store, 'asyncAddCashFlow').mockResolvedValueOnce({
+      status: 'success',
+    } as any)
+
+    await fireEvent.update(getByLabelText('Label'), 'Bonus')
+    await fireEvent.update(getByLabelText('Nominal'), '1000')
+    await fireEvent.click(getByRole('button', { name: 'Simpan Transaksi' }))
+
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith(
+      'Berhasil',
+      'Transaksi berhasil ditambahkan'
+    )
+    expect(emitted()['success']).toBeTruthy()
+
+    vi.spyOn(store, 'asyncAddCashFlow').mockResolvedValueOnce({ success: false } as any)
+    await fireEvent.click(getByRole('button', { name: 'Simpan Transaksi' }))
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Gagal',
+      'Gagal menambahkan transaksi'
+    )
+  })
+
+  it('shows loading text when isCashFlowAdd', async () => {
+    const { getByRole } = renderWithProviders(AddModal, { props: { isOpen: true } })
+    const store = useCashFlowsStore()
+    store.isCashFlowAdd = true
+    const { nextTick } = await import('vue')
+    await nextTick()
+    expect(getByRole('button', { name: /Menyimpan|Simpan/ })).toHaveTextContent('Menyimpan...')
+  })
+
+  it('resets form when modal opens', async () => {
+    const { getByLabelText, rerender } = renderWithProviders(AddModal, {
+      props: { isOpen: false },
+    })
+    // open modal to trigger watch reset
+    const { getByLabelText: get2 } = renderWithProviders(AddModal, {
+      props: { isOpen: true },
+    })
+    expect((get2('Label') as HTMLInputElement).value).toBe('')
+  })
+
+  it('watch handles isOpen false without reset', async () => {
+    const { rerender, getByLabelText } = renderWithProviders(AddModal, {
+      props: { isOpen: true },
+    })
+    await fireEvent.update(getByLabelText('Label'), 'Temp')
+    await rerender({ isOpen: false })
+    await rerender({ isOpen: true })
+    expect((getByLabelText('Label') as HTMLInputElement).value).toBe('')
+  })
 })

@@ -30,9 +30,7 @@ async function loadData() {
   await store.asyncGetLabels()
 }
 
-onMounted(async () => {
-  await loadData()
-})
+onMounted(loadData)
 
 function applyFilter() {
   loadData()
@@ -65,34 +63,57 @@ async function handleResetAll() {
 }
 
 // Derived Metrics
-const netBalance = computed(() => {
+function computeNetBalance() {
   if (store.stats?.cashflow !== undefined) return store.stats.cashflow
   return (store.stats?.total_inflow || 0) - (store.stats?.total_outflow || 0)
-})
+}
+const netBalance = computed(computeNetBalance)
 
-const totalInflow = computed(() => store.stats?.total_inflow || 0)
-const totalOutflow = computed(() => store.stats?.total_outflow || 0)
+function computeTotalInflow() {
+  return store.stats?.total_inflow || 0
+}
+const totalInflow = computed(computeTotalInflow)
 
-const cashBalance = computed(() => {
+function computeTotalOutflow() {
+  return store.stats?.total_outflow || 0
+}
+const totalOutflow = computed(computeTotalOutflow)
+
+function computeCashBalance() {
   if (store.stats?.cash !== undefined) return store.stats.cash
   const inCash = store.stats?.total_inflow_cash || 0
   const outCash = store.stats?.total_outflow_cash || 0
   return inCash - outCash
-})
+}
+const cashBalance = computed(computeCashBalance)
 
-const savingsBalance = computed(() => {
+function computeSavingsBalance() {
   if (store.stats?.savings !== undefined) return store.stats.savings
   const inSav = store.stats?.total_inflow_savings || 0
   const outSav = store.stats?.total_outflow_savings || 0
   return inSav - outSav
-})
+}
+const savingsBalance = computed(computeSavingsBalance)
 
-const loansBalance = computed(() => {
+function computeLoansBalance() {
   if (store.stats?.loans !== undefined) return store.stats.loans
   const inLoan = store.stats?.total_inflow_loans || 0
   const outLoan = store.stats?.total_outflow_loans || 0
   return inLoan - outLoan
-})
+}
+const loansBalance = computed(computeLoansBalance)
+
+function openAddModal() {
+  isAddModalOpen.value = true
+}
+
+function closeAddModal() {
+  isAddModalOpen.value = false
+}
+
+function goToDetail(id: number | string) {
+  router.push(`/cash-flows/${id}`)
+}
 </script>
 
 <template>
@@ -118,7 +139,7 @@ const loansBalance = computed(() => {
           type="button"
           aria-label="Tambah Transaksi"
           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
-          @click="isAddModalOpen = true"
+          @click="openAddModal"
         >
           <span class="text-base font-bold">+</span>
           <span>Tambah Transaksi</span>
@@ -288,7 +309,7 @@ const loansBalance = computed(() => {
       <button
         type="button"
         class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700"
-        @click="isAddModalOpen = true"
+        @click="openAddModal"
       >
         + Tambah Transaksi
       </button>
@@ -345,7 +366,7 @@ const loansBalance = computed(() => {
                 <button
                   type="button"
                   class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50"
-                  @click="router.push(`/cash-flows/${item.id}`)"
+                  @click="goToDetail(item.id)"
                 >
                   Detail
                 </button>
@@ -361,7 +382,7 @@ const loansBalance = computed(() => {
           v-for="item in store.cashFlows"
           :key="item.id"
           class="p-4 space-y-2 hover:bg-slate-50 cursor-pointer"
-          @click="router.push(`/cash-flows/${item.id}`)"
+          @click="goToDetail(item.id)"
         >
           <div class="flex items-center justify-between">
             <span
@@ -396,7 +417,7 @@ const loansBalance = computed(() => {
     <!-- Modal Tambah Transaksi -->
     <AddModal
       :is-open="isAddModalOpen"
-      @close="isAddModalOpen = false"
+      @close="closeAddModal"
       @success="loadData"
     />
   </div>

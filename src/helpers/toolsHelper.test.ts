@@ -65,4 +65,9 @@ describe('toolsHelper', () => {
     expect(photoUrl('images/user.png')).toBe('https://open-api.delcom.org/images/user.png')
     expect(photoUrl('/images/user.png')).toBe('https://open-api.delcom.org/images/user.png')
   })
+
+  it('photoUrl with relative path covering base', () => {
+    expect(photoUrl('uploads/x.png')).toContain('uploads/x.png')
+    expect(photoUrl('/uploads/x.png')).toContain('uploads/x.png')
+  })
 })

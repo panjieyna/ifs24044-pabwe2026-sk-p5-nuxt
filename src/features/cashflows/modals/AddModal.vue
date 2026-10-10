@@ -8,8 +8,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'success'): void
+  close: []
+  success: []
 }>()
 
 const store = useCashFlowsStore()
@@ -22,18 +22,30 @@ const form = reactive({
   description: '',
 })
 
-watch(
-  () => props.isOpen,
-  (open) => {
-    if (open) {
-      form.type = 'inflow'
-      form.source = 'cash'
-      form.label = ''
-      form.nominal = 0
-      form.description = ''
-    }
+function getIsOpen() {
+  return props.isOpen
+}
+
+function onOpenChange(open: boolean) {
+  if (open) {
+    form.type = 'inflow'
+    form.source = 'cash'
+    form.label = ''
+    form.nominal = 0
+    form.description = ''
   }
-)
+}
+
+watch(getIsOpen, onOpenChange)
+
+function handleClose() {
+  emit('close')
+}
+
+function handleSuccess() {
+  emit('success')
+  emit('close')
+}
 
 async function submit() {
   if (!form.label.trim()) {
@@ -55,8 +67,7 @@ async function submit() {
 
   if (res?.success || res?.status === 'success') {
     showSuccessDialog('Berhasil', res?.message || 'Transaksi berhasil ditambahkan')
-    emit('success')
-    emit('close')
+    handleSuccess()
   } else {
     showErrorDialog('Gagal', res?.message || 'Gagal menambahkan transaksi')
   }
@@ -69,7 +80,7 @@ async function submit() {
     <div
       data-testid="add-modal-backdrop"
       class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
-      @click="$emit('close')"
+      @click="handleClose"
     ></div>
 
     <!-- Modal Box -->
@@ -87,7 +98,7 @@ async function submit() {
           type="button"
           aria-label="Tutup"
           class="rounded-lg p-1 text-slate-600 hover:bg-slate-100 hover:text-slate-600"
-          @click="$emit('close')"
+          @click="handleClose"
         >
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -197,7 +208,7 @@ async function submit() {
           <button
             type="button"
             class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            @click="$emit('close')"
+            @click="handleClose"
           >
             Batal
           </button>

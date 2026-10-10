@@ -38,12 +38,16 @@ export function renderWithProviders(
     ...routes,
   ]
 
-  const router = options.router || createRouter({
-    history: createMemoryHistory(),
-    routes: defaultRoutes,
-  })
+  const history = createMemoryHistory()
+  // Set location BEFORE router init so currentRoute has params on first render
+  history.replace(route)
 
-  router.push(route)
+  const router =
+    options.router ||
+    createRouter({
+      history,
+      routes: defaultRoutes,
+    })
 
   const utils = render(component, {
     global: {

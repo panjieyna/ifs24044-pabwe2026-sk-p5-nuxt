@@ -76,4 +76,30 @@ describe('NavbarComponent', () => {
     expect(logoutSpy).not.toHaveBeenCalled()
     expect(pushSpy).not.toHaveBeenCalled()
   })
+
+  it('falls back to U initial when name is empty', async () => {
+    const { getByText } = renderWithProviders(NavbarComponent)
+    const usersStore = useUsersStore()
+    usersStore.profile = { id: 1, name: '', email: 'x@delcom.org', photo: null }
+    await nextTick()
+    expect(getByText('U')).toBeInTheDocument()
+  })
+
+  it('uses authStore user when profile is null', async () => {
+    const { getByTestId } = renderWithProviders(NavbarComponent)
+    const usersStore = useUsersStore()
+    const authStore = useAuthStore()
+    usersStore.profile = null
+    authStore.user = { id: 2, name: 'From Auth', email: 'auth@delcom.org' }
+    await nextTick()
+    expect(getByTestId('navbar-user-name')).toHaveTextContent('From Auth')
+  })
+
+  it('photo with empty name uses User alt', async () => {
+    const { getByAltText } = renderWithProviders(NavbarComponent)
+    const usersStore = useUsersStore()
+    usersStore.profile = { id: 1, name: '', email: 'x@delcom.org', photo: 'https://example.com/p.png' }
+    await nextTick()
+    expect(getByAltText('User')).toBeInTheDocument()
+  })
 })

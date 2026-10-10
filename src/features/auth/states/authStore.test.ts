@@ -84,6 +84,26 @@ describe('authStore', () => {
     expect(resFail.message).toBe('Email sudah digunakan')
   })
 
+  it('handles asyncRegister throw without message and status-only success', async () => {
+    const store = useAuthStore()
+    vi.mocked(authApi.register).mockRejectedValueOnce({})
+    const res = await store.asyncRegister({
+      name: 'Budi',
+      email: 'budi@delcom.org',
+      password: 'password123',
+    })
+    expect(res.message).toBe('Registrasi gagal')
+
+    vi.mocked(authApi.register).mockResolvedValueOnce({ status: 'success' } as any)
+    const res2 = await store.asyncRegister({
+      name: 'Budi',
+      email: 'budi@delcom.org',
+      password: 'password123',
+    })
+    expect(store.isAuthRegister).toBe(true)
+    expect(res2.status).toBe('success')
+  })
+
   it('handles asyncLogout success and failure', async () => {
     const store = useAuthStore()
     store.token = 'existing-token'
@@ -102,5 +122,38 @@ describe('authStore', () => {
     vi.mocked(authApi.logout).mockRejectedValueOnce(new Error('Server error'))
     await store.asyncLogout()
     expect(store.isAuthLogout).toBe(true)
+  })
+
+  it('handles asyncLogin throw without message', async () => {
+    const store = useAuthStore()
+    vi.mocked(authApi.login).mockRejectedValueOnce({})
+    const res = await store.asyncLogin({ email: 'budi@delcom.org', password: 'wrong' })
+    expect(store.isAuthLogin).toBe(false)
+    expect(res.message).toBe('Login gagal')
+  })
+
+  it('handles login success via status only and missing token/user', async () => {
+    const store = useAuthStore()
+    vi.mocked(authApi.login).mockResolvedValueOnce({
+      status: 'success',
+      data: {},
+    } as any)
+    const res = await store.asyncLogin({ email: 'budi@delcom.org', password: 'password123' })
+    expect(store.isAuthLogin).toBe(true)
+    expect(res.status).toBe('success')
+  })
+
+  it('login with falsy error message string', async () => {
+    const store = useAuthStore()
+    vi.mocked(authApi.login).mockRejectedValueOnce({ message: '' })
+    const res = await store.asyncLogin({ email: 'a@b.com', password: 'x' })
+    expect(res.message).toBe('Login gagal')
+  })
+
+  it('register with falsy error message string', async () => {
+    const store = useAuthStore()
+    vi.mocked(authApi.register).mockRejectedValueOnce({ message: '' })
+    const res = await store.asyncRegister({ name: 'A', email: 'a@b.com', password: 'x' })
+    expect(res.message).toBe('Registrasi gagal')
   })
 })

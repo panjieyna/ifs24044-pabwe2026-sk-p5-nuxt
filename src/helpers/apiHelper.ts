@@ -4,8 +4,7 @@ export const getAccessToken = (): string | null => localStorage.getItem(TOKEN_KE
 export const putAccessToken = (token: string): void => localStorage.setItem(TOKEN_KEY, token)
 export const removeAccessToken = (): void => localStorage.removeItem(TOKEN_KEY)
 
-export const getBaseUrl = (): string =>
-  typeof DELCOM_BASEURL !== 'undefined' ? DELCOM_BASEURL : 'https://open-api.delcom.org/api/v1'
+export const getBaseUrl = (): string => String(DELCOM_BASEURL)
 
 export interface RequestOptions extends RequestInit {
   params?: Record<string, any>

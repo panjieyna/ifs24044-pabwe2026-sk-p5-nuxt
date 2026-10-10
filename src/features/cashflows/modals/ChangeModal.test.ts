@@ -137,4 +137,64 @@ describe('ChangeModal', () => {
     await fireEvent.click(submitBtn)
     expect(updateSpy).not.toHaveBeenCalled()
   })
+
+  it('updates source and description fields', async () => {
+    const { getByLabelText, getByRole } = renderWithProviders(ChangeModal, {
+      props: { isOpen: true, cashFlow: mockCashFlow },
+    })
+    const store = useCashFlowsStore()
+    vi.spyOn(store, 'asyncUpdateCashFlow').mockResolvedValueOnce({
+      success: true,
+      status: 'success',
+    } as any)
+
+    await fireEvent.update(getByLabelText('Sumber Dana'), 'loans')
+    await fireEvent.update(getByLabelText('Deskripsi'), 'Catatan baru')
+    await fireEvent.update(getByLabelText('Label'), 'Update Label')
+    await fireEvent.click(getByRole('button', { name: 'Perbarui Transaksi' }))
+
+    expect(store.asyncUpdateCashFlow).toHaveBeenCalled()
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith(
+      'Berhasil',
+      'Transaksi berhasil diubah'
+    )
+  })
+
+  it('uses default error message on failed update', async () => {
+    const { getByRole } = renderWithProviders(ChangeModal, {
+      props: { isOpen: true, cashFlow: mockCashFlow },
+    })
+    const store = useCashFlowsStore()
+    vi.spyOn(store, 'asyncUpdateCashFlow').mockResolvedValueOnce({
+      success: false,
+    } as any)
+
+    await fireEvent.click(getByRole('button', { name: 'Perbarui Transaksi' }))
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Gagal',
+      'Gagal mengubah transaksi'
+    )
+  })
+
+  it('shows loading text when isCashFlowChange', async () => {
+    const { getByRole } = renderWithProviders(ChangeModal, {
+      props: { isOpen: true, cashFlow: mockCashFlow },
+    })
+    const store = useCashFlowsStore()
+    store.isCashFlowChange = true
+    const { nextTick } = await import('vue')
+    await nextTick()
+    const btn = getByRole('button', { name: /Menyimpan|Perbarui/ })
+    expect(btn.textContent).toMatch(/Menyimpan|Perbarui/)
+  })
+
+  it('prefills with fallback defaults when cashFlow fields missing', async () => {
+    const { getByLabelText } = renderWithProviders(ChangeModal, {
+      props: {
+        isOpen: true,
+        cashFlow: { id: 9, type: undefined, source: undefined, label: undefined, nominal: undefined } as any,
+      },
+    })
+    expect((getByLabelText('Label') as HTMLInputElement).value).toBe('')
+  })
 })

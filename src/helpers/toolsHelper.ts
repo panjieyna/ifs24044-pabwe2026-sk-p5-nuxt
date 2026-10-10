@@ -50,6 +50,5 @@ export const formatDate = (dateString?: string): string => {
 export const photoUrl = (photo?: string | null): string => {
   if (!photo) return ''
   if (/^https?:\/\//.test(photo)) return photo
-  const base = typeof DELCOM_BASEURL !== 'undefined' ? DELCOM_BASEURL : 'https://open-api.delcom.org/api/v1'
-  return `${new URL(base).origin}/${photo.replace(/^\//, '')}`
+  return `${new URL(String(DELCOM_BASEURL)).origin}/${photo.replace(/^\//, '')}`
 }

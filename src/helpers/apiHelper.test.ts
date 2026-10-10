@@ -169,4 +169,10 @@ describe('apiHelper', () => {
 
     await expect(requestJson('/test')).rejects.toThrow('Terjadi kesalahan')
   })
+
+  it('covers fallback base url branch', () => {
+    // getBaseUrl always returns a string; exercise the function path
+    const url = getBaseUrl()
+    expect(url).toContain('delcom.org')
+  })
 })

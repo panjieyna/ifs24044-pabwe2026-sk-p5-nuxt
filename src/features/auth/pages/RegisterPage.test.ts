@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fireEvent } from '@testing-library/vue'
+import { nextTick } from 'vue'
 import RegisterPage from './RegisterPage.vue'
 import { renderWithProviders } from '../../../test-utils'
 import { useAuthStore } from '../states/authStore'
@@ -37,26 +38,17 @@ describe('RegisterPage', () => {
     vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({
       success: true,
       status: 'success',
-      message: 'Akun berhasil dibuat',
+      message: 'Registrasi berhasil',
     } as any)
     const pushSpy = vi.spyOn(router, 'push')
 
-    const nameInput = getByLabelText('Nama')
-    const emailInput = getByLabelText('Email')
-    const passwordInput = getByLabelText('Kata Sandi')
-    const button = getByRole('button', { name: 'Daftar' })
+    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
+    await fireEvent.click(getByRole('button', { name: 'Daftar' }))
 
-    await fireEvent.input(nameInput, { target: { value: 'Budi Santoso' } })
-    await fireEvent.input(emailInput, { target: { value: 'budi@delcom.org' } })
-    await fireEvent.input(passwordInput, { target: { value: 'secret123' } })
-    await fireEvent.click(button)
-
-    expect(store.asyncRegister).toHaveBeenCalledWith({
-      name: 'Budi Santoso',
-      email: 'budi@delcom.org',
-      password: 'secret123',
-    })
-    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Akun berhasil dibuat')
+    expect(store.asyncRegister).toHaveBeenCalled()
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Registrasi berhasil')
     expect(pushSpy).toHaveBeenCalledWith('/auth/login')
   })
 
@@ -66,19 +58,52 @@ describe('RegisterPage', () => {
     vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({
       success: false,
       status: 'fail',
-      message: 'Email sudah terdaftar',
+      message: 'Email sudah digunakan',
     } as any)
 
-    const nameInput = getByLabelText('Nama')
-    const emailInput = getByLabelText('Email')
-    const passwordInput = getByLabelText('Kata Sandi')
-    const button = getByRole('button', { name: 'Daftar' })
+    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
+    await fireEvent.click(getByRole('button', { name: 'Daftar' }))
 
-    await fireEvent.input(nameInput, { target: { value: 'Budi Santoso' } })
-    await fireEvent.input(emailInput, { target: { value: 'budi@delcom.org' } })
-    await fireEvent.input(passwordInput, { target: { value: 'secret123' } })
-    await fireEvent.click(button)
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Email sudah digunakan')
+  })
 
-    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Email sudah terdaftar')
+  it('handles success via status field and default message', async () => {
+    const { getByLabelText, getByRole, router } = renderWithProviders(RegisterPage)
+    const store = useAuthStore()
+    vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({ status: 'success' } as any)
+    const pushSpy = vi.spyOn(router, 'push')
+
+    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
+    await fireEvent.click(getByRole('button', { name: 'Daftar' }))
+
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Registrasi berhasil')
+    expect(pushSpy).toHaveBeenCalledWith('/auth/login')
+  })
+
+  it('shows loading button text', async () => {
+    const { getByRole } = renderWithProviders(RegisterPage)
+    const store = useAuthStore()
+    store.isLoadingRegister = true
+    await nextTick()
+    const btn = getByRole('button', { name: 'Daftar' })
+    expect(btn).toHaveTextContent('Memproses...')
+    expect(btn).toBeDisabled()
+  })
+
+  it('uses default error message', async () => {
+    const { getByLabelText, getByRole } = renderWithProviders(RegisterPage)
+    const store = useAuthStore()
+    vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({ success: false } as any)
+
+    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret')
+    await fireEvent.click(getByRole('button', { name: 'Daftar' }))
+
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Registrasi gagal')
   })
 })

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { fireEvent } from '@testing-library/vue'
+import { nextTick } from 'vue'
 import LoginPage from './LoginPage.vue'
 import { renderWithProviders } from '../../../test-utils'
 import { useAuthStore } from '../states/authStore'
@@ -40,13 +41,9 @@ describe('LoginPage', () => {
     } as any)
     const pushSpy = vi.spyOn(router, 'push')
 
-    const emailInput = getByLabelText('Email')
-    const passwordInput = getByLabelText('Kata Sandi')
-    const button = getByRole('button', { name: 'Masuk' })
-
-    await fireEvent.input(emailInput, { target: { value: 'user@delcom.org' } })
-    await fireEvent.input(passwordInput, { target: { value: 'secret123' } })
-    await fireEvent.click(button)
+    await fireEvent.update(getByLabelText('Email'), 'user@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
+    await fireEvent.click(getByRole('button', { name: 'Masuk' }))
 
     expect(store.asyncLogin).toHaveBeenCalledWith({
       email: 'user@delcom.org',
@@ -65,14 +62,54 @@ describe('LoginPage', () => {
       message: 'Kredensial tidak valid',
     } as any)
 
-    const emailInput = getByLabelText('Email')
-    const passwordInput = getByLabelText('Kata Sandi')
-    const button = getByRole('button', { name: 'Masuk' })
-
-    await fireEvent.input(emailInput, { target: { value: 'user@delcom.org' } })
-    await fireEvent.input(passwordInput, { target: { value: 'wrongpass' } })
-    await fireEvent.click(button)
+    await fireEvent.update(getByLabelText('Email'), 'user@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'wrongpass')
+    await fireEvent.click(getByRole('button', { name: 'Masuk' }))
 
     expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Kredensial tidak valid')
+  })
+
+  it('handles success via status field and default message', async () => {
+    const { getByLabelText, getByRole, router } = renderWithProviders(LoginPage)
+    const store = useAuthStore()
+    vi.spyOn(store, 'asyncLogin').mockResolvedValueOnce({
+      status: 'success',
+    } as any)
+    const pushSpy = vi.spyOn(router, 'push')
+
+    await fireEvent.update(getByLabelText('Email'), 'user@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
+    await fireEvent.click(getByRole('button', { name: 'Masuk' }))
+
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Login berhasil')
+    expect(pushSpy).toHaveBeenCalledWith('/')
+  })
+
+  it('shows loading button text when isLoadingLogin', async () => {
+    const { getByRole } = renderWithProviders(LoginPage)
+    const store = useAuthStore()
+    store.isLoadingLogin = true
+    await nextTick()
+    // aria-label tetap "Masuk", teks tombol jadi "Memproses..."
+    const btn = getByRole('button', { name: 'Masuk' })
+    expect(btn).toHaveTextContent('Memproses...')
+    expect(btn).toBeDisabled()
+  })
+
+  it('uses default error message when response has no message', async () => {
+    const { getByLabelText, getByRole } = renderWithProviders(LoginPage)
+    const store = useAuthStore()
+    vi.spyOn(store, 'asyncLogin').mockResolvedValueOnce({
+      success: false,
+    } as any)
+
+    await fireEvent.update(getByLabelText('Email'), 'user@delcom.org')
+    await fireEvent.update(getByLabelText('Kata Sandi'), 'wrong')
+    await fireEvent.click(getByRole('button', { name: 'Masuk' }))
+
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Gagal',
+      'Email atau kata sandi tidak valid'
+    )
   })
 })

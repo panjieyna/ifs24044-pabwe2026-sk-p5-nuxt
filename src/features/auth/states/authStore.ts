@@ -39,13 +39,15 @@ export const useAuthStore = defineStore('auth', () => {
           user.value = res.data.user
         }
       }
+      isLoadingLogin.value = false
+      isLoading.value = false
       return res
     } catch (err: any) {
       isAuthLogin.value = false
-      return { success: false, message: err.message || 'Login gagal' }
-    } finally {
       isLoadingLogin.value = false
       isLoading.value = false
+      const message = err?.message ? err.message : 'Login gagal'
+      return { success: false, message }
     }
   }
 
@@ -56,13 +58,15 @@ export const useAuthStore = defineStore('auth', () => {
       const res: any = await register(payload)
       const success = Boolean(res?.success || res?.status === 'success')
       isAuthRegister.value = success
+      isLoadingRegister.value = false
+      isLoading.value = false
       return res
     } catch (err: any) {
       isAuthRegister.value = false
-      return { success: false, message: err.message || 'Registrasi gagal' }
-    } finally {
       isLoadingRegister.value = false
       isLoading.value = false
+      const message = err?.message ? err.message : 'Registrasi gagal'
+      return { success: false, message }
     }
   }
 
@@ -73,15 +77,14 @@ export const useAuthStore = defineStore('auth', () => {
       await logout()
     } catch {
       // Ignore logout error to ensure local session is cleared
-    } finally {
-      removeAccessToken()
-      token.value = null
-      user.value = null
-      isAuthLogin.value = false
-      isAuthLogout.value = true
-      isLoadingLogout.value = false
-      isLoading.value = false
     }
+    removeAccessToken()
+    token.value = null
+    user.value = null
+    isAuthLogin.value = false
+    isAuthLogout.value = true
+    isLoadingLogout.value = false
+    isLoading.value = false
   }
 
   return {

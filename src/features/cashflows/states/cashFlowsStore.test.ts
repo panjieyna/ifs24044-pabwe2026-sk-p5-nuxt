@@ -193,6 +193,35 @@ describe('cashFlowsStore', () => {
     vi.mocked(cashFlowApi.getCashFlowLabels).mockRejectedValueOnce(new Error('Network error'))
     const resCatch = await store.asyncGetLabels()
     expect(resCatch.success).toBe(false)
+
+    // unsuccessful response without throw
+    vi.mocked(cashFlowApi.getCashFlowLabels).mockResolvedValueOnce({
+      success: false,
+      status: 'fail',
+      data: {},
+    } as any)
+    await store.asyncGetLabels()
+  })
+
+  it('handles getCashFlows with empty data fallback', async () => {
+    const store = useCashFlowsStore()
+    vi.mocked(cashFlowApi.getCashFlows).mockResolvedValueOnce({
+      status: 'success',
+      data: {},
+    } as any)
+    await store.asyncGetCashFlows()
+    expect(store.cashFlows).toEqual([])
+    expect(store.stats).toBeNull()
+  })
+
+  it('handles getCashFlowById with empty data fallback', async () => {
+    const store = useCashFlowsStore()
+    vi.mocked(cashFlowApi.getCashFlowById).mockResolvedValueOnce({
+      status: 'success',
+      data: {},
+    } as any)
+    await store.asyncGetCashFlowById(1)
+    expect(store.cashFlow).toBeNull()
   })
 
   it('handles asyncGetDailyStats success and catch error', async () => {
@@ -210,6 +239,12 @@ describe('cashFlowsStore', () => {
     vi.mocked(cashFlowApi.getCashFlowStatsDaily).mockRejectedValueOnce(new Error('Network error'))
     const resCatch = await store.asyncGetDailyStats()
     expect(resCatch.success).toBe(false)
+
+    vi.mocked(cashFlowApi.getCashFlowStatsDaily).mockResolvedValueOnce({
+      success: false,
+      status: 'fail',
+    } as any)
+    await store.asyncGetDailyStats()
   })
 
   it('handles asyncGetMonthlyStats success and catch error', async () => {
@@ -227,5 +262,35 @@ describe('cashFlowsStore', () => {
     vi.mocked(cashFlowApi.getCashFlowStatsMonthly).mockRejectedValueOnce(new Error('Network error'))
     const resCatch = await store.asyncGetMonthlyStats()
     expect(resCatch.success).toBe(false)
+
+    vi.mocked(cashFlowApi.getCashFlowStatsMonthly).mockResolvedValueOnce({
+      success: false,
+      status: 'fail',
+    } as any)
+    await store.asyncGetMonthlyStats()
+  })
+
+  it('handles empty labels and stats data', async () => {
+    const store = useCashFlowsStore()
+    vi.mocked(cashFlowApi.getCashFlowLabels).mockResolvedValueOnce({
+      status: 'success',
+      data: {},
+    } as any)
+    await store.asyncGetLabels()
+    expect(store.labels).toEqual([])
+
+    vi.mocked(cashFlowApi.getCashFlowStatsDaily).mockResolvedValueOnce({
+      status: 'success',
+      data: null,
+    } as any)
+    await store.asyncGetDailyStats()
+    expect(store.dailyStats).toBeNull()
+
+    vi.mocked(cashFlowApi.getCashFlowStatsMonthly).mockResolvedValueOnce({
+      status: 'success',
+      data: null,
+    } as any)
+    await store.asyncGetMonthlyStats()
+    expect(store.monthlyStats).toBeNull()
   })
 })
