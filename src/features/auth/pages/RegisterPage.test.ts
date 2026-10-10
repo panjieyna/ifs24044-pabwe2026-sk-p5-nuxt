@@ -18,7 +18,7 @@ describe('RegisterPage', () => {
 
   it('renders register form properly', () => {
     const { getByLabelText, getByRole } = renderWithProviders(RegisterPage)
-    expect(getByLabelText('Nama')).toBeInTheDocument()
+    expect(getByLabelText('Nama Lengkap')).toBeInTheDocument()
     expect(getByLabelText('Email')).toBeInTheDocument()
     expect(getByLabelText('Kata Sandi')).toBeInTheDocument()
     expect(getByRole('button', { name: 'Daftar' })).toBeInTheDocument()
@@ -29,7 +29,10 @@ describe('RegisterPage', () => {
     const button = getByRole('button', { name: 'Daftar' })
 
     await fireEvent.click(button)
-    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Validasi Gagal', 'Semua kolom wajib diisi')
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Validasi Gagal',
+      'Semua kolom wajib diisi'
+    )
   })
 
   it('handles successful registration and redirects to login', async () => {
@@ -42,13 +45,16 @@ describe('RegisterPage', () => {
     } as any)
     const pushSpy = vi.spyOn(router, 'push')
 
-    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Nama Lengkap'), 'Budi')
     await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
     await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
     await fireEvent.click(getByRole('button', { name: 'Daftar' }))
 
     expect(store.asyncRegister).toHaveBeenCalled()
-    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Registrasi berhasil')
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith(
+      'Berhasil',
+      'Registrasi berhasil'
+    )
     expect(pushSpy).toHaveBeenCalledWith('/auth/login')
   })
 
@@ -61,12 +67,15 @@ describe('RegisterPage', () => {
       message: 'Email sudah digunakan',
     } as any)
 
-    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Nama Lengkap'), 'Budi')
     await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
     await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
     await fireEvent.click(getByRole('button', { name: 'Daftar' }))
 
-    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Email sudah digunakan')
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Gagal',
+      'Email sudah digunakan'
+    )
   })
 
   it('handles success via status field and default message', async () => {
@@ -75,12 +84,15 @@ describe('RegisterPage', () => {
     vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({ status: 'success' } as any)
     const pushSpy = vi.spyOn(router, 'push')
 
-    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Nama Lengkap'), 'Budi')
     await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
     await fireEvent.update(getByLabelText('Kata Sandi'), 'secret123')
     await fireEvent.click(getByRole('button', { name: 'Daftar' }))
 
-    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith('Berhasil', 'Registrasi berhasil')
+    expect(toolsHelper.showSuccessDialog).toHaveBeenCalledWith(
+      'Berhasil',
+      'Registrasi berhasil'
+    )
     expect(pushSpy).toHaveBeenCalledWith('/auth/login')
   })
 
@@ -89,7 +101,9 @@ describe('RegisterPage', () => {
     const store = useAuthStore()
     store.isLoadingRegister = true
     await nextTick()
-    const btn = getByRole('button', { name: 'Daftar' })
+
+    // Tanpa aria-label, accessible name = teks visible "Memproses..."
+    const btn = getByRole('button', { name: 'Memproses...' })
     expect(btn).toHaveTextContent('Memproses...')
     expect(btn).toBeDisabled()
   })
@@ -99,7 +113,7 @@ describe('RegisterPage', () => {
     const store = useAuthStore()
     vi.spyOn(store, 'asyncRegister').mockResolvedValueOnce({ success: false } as any)
 
-    await fireEvent.update(getByLabelText('Nama'), 'Budi')
+    await fireEvent.update(getByLabelText('Nama Lengkap'), 'Budi')
     await fireEvent.update(getByLabelText('Email'), 'budi@delcom.org')
     await fireEvent.update(getByLabelText('Kata Sandi'), 'secret')
     await fireEvent.click(getByRole('button', { name: 'Daftar' }))

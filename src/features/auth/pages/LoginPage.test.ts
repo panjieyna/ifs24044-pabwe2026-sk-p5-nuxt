@@ -28,7 +28,10 @@ describe('LoginPage', () => {
     const button = getByRole('button', { name: 'Masuk' })
 
     await fireEvent.click(button)
-    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Validasi Gagal', 'Semua kolom wajib diisi')
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Validasi Gagal',
+      'Semua kolom wajib diisi'
+    )
   })
 
   it('handles successful login and redirects to home', async () => {
@@ -66,7 +69,10 @@ describe('LoginPage', () => {
     await fireEvent.update(getByLabelText('Kata Sandi'), 'wrongpass')
     await fireEvent.click(getByRole('button', { name: 'Masuk' }))
 
-    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith('Gagal', 'Kredensial tidak valid')
+    expect(toolsHelper.showErrorDialog).toHaveBeenCalledWith(
+      'Gagal',
+      'Kredensial tidak valid'
+    )
   })
 
   it('handles success via status field and default message', async () => {
@@ -90,8 +96,9 @@ describe('LoginPage', () => {
     const store = useAuthStore()
     store.isLoadingLogin = true
     await nextTick()
-    // aria-label tetap "Masuk", teks tombol jadi "Memproses..."
-    const btn = getByRole('button', { name: 'Masuk' })
+
+    // Tanpa aria-label, accessible name = teks visible "Memproses..."
+    const btn = getByRole('button', { name: 'Memproses...' })
     expect(btn).toHaveTextContent('Memproses...')
     expect(btn).toBeDisabled()
   })
