@@ -1,9 +1,4 @@
-# Delcom Cash Flow - robots.txt
 User-agent: *
 Allow: /
 
-# Sitemap
 Sitemap: https://ifs24044-pabwe2026-sk-p5-nuxt.vercel.app/sitemap.xml
-
-# Only disallow auth routes
-Disallow: /auth/

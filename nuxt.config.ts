@@ -57,6 +57,8 @@ export default defineNuxtConfig({
           content:
             'Delcom Cash Flow — aplikasi pencatatan arus kas untuk memantau pemasukan, pengeluaran, serta saldo kas tunai, tabungan, dan pinjaman secara real-time.',
         },
+        // SEO: izinkan indexing (perbaiki audit "Page is blocked from indexing")
+        { name: 'robots', content: 'index, follow' },
         { name: 'theme-color', content: '#2563eb' },
         { name: 'color-scheme', content: 'light' },
         { property: 'og:type', content: 'website' },
@@ -83,7 +85,11 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: '',
+        },
         {
           rel: 'preload',
           as: 'style',
@@ -98,21 +104,7 @@ export default defineNuxtConfig({
         },
         { rel: 'dns-prefetch', href: 'https://open-api.delcom.org' },
       ],
-      script: [
-        {
-          children: `
-            if ('onpageshow' in window) {
-              window.addEventListener('pageshow', (event) => {
-                if (event.persisted) {
-                  window.location.reload();
-                }
-              });
-            }
-          `,
-          type: 'text/javascript',
-          pos: 'bodyClose',
-        },
-      ],
+      // Script pageshow reload DIHAPUS agar bfcache tidak gagal
     },
   },
 })
