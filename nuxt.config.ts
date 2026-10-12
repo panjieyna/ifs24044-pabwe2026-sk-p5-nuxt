@@ -1,6 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   future: {
@@ -8,10 +7,7 @@ export default defineNuxtConfig({
   },
   srcDir: 'src/',
   ssr: false,
-
-  // Matikan DevTools agar production build tidak error simple-git
   devtools: { enabled: false },
-
   modules: ['@pinia/nuxt'],
   css: ['~/index.css'],
   vite: {
@@ -57,7 +53,6 @@ export default defineNuxtConfig({
           content:
             'Delcom Cash Flow — aplikasi pencatatan arus kas untuk memantau pemasukan, pengeluaran, serta saldo kas tunai, tabungan, dan pinjaman secara real-time.',
         },
-        // SEO: izinkan indexing (perbaiki audit "Page is blocked from indexing")
         { name: 'robots', content: 'index, follow' },
         { name: 'theme-color', content: '#2563eb' },
         { name: 'color-scheme', content: 'light' },
@@ -83,28 +78,10 @@ export default defineNuxtConfig({
             'Kelola pemasukan, pengeluaran, dan saldo kas tunai, tabungan, serta pinjaman dengan mudah.',
         },
       ],
+      // Tanpa Google Fonts → FCP/LCP/Speed Index lebih cepat
       link: [
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        {
-          rel: 'preconnect',
-          href: 'https://fonts.gstatic.com',
-          crossorigin: '',
-        },
-        {
-          rel: 'preload',
-          as: 'style',
-          href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap',
-          fetchpriority: 'high',
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap',
-          media: 'print',
-          onload: "this.media='all'",
-        },
         { rel: 'dns-prefetch', href: 'https://open-api.delcom.org' },
       ],
-      // Script pageshow reload DIHAPUS agar bfcache tidak gagal
     },
   },
 })
