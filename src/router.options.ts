@@ -1,7 +1,7 @@
 import type { RouterConfig } from '@nuxt/schema'
-import { routes, authGuard } from './routes'
+import { routes } from './routes'
 
-export { authGuard, routes }
+export { routes, authGuard } from './routes'
 
 export default <RouterConfig>{
   routes: (_routes) => routes,

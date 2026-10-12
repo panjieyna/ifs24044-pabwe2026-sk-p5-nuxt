@@ -39,7 +39,7 @@ export const formatDate = (dateString?: string): string => {
   if (!dateString) return ''
   const clean = dateString.includes('T') ? dateString : dateString.replace(' ', 'T')
   const date = new Date(clean)
-  if (isNaN(date.getTime())) return dateString
+  if (Number.isNaN(date.getTime())) return dateString
   return date.toLocaleDateString('id-ID', {
     day: 'numeric',
     month: 'long',

@@ -38,8 +38,8 @@ export const useCashFlowsStore = defineStore('cashflows', () => {
   const cashFlow = ref<CashFlow | null>(null)
   const stats = ref<CashFlowStats | null>(null)
   const labels = ref<string[]>([])
-  const dailyStats = ref<any | null>(null)
-  const monthlyStats = ref<any | null>(null)
+  const dailyStats = ref<Record<string, unknown> | null>(null)
+  const monthlyStats = ref<Record<string, unknown> | null>(null)
 
   const isLoading = ref<boolean>(false)
   const isCashFlowAdd = ref<boolean>(false)

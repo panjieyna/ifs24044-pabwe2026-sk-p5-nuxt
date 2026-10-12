@@ -5,7 +5,7 @@ import { useUsersStore } from '../../users/states/usersStore'
 import { showConfirmDialog, photoUrl } from '../../../helpers/toolsHelper'
 
 defineEmits<{
-  (e: 'toggle-sidebar'): void
+  'toggle-sidebar': []
 }>()
 
 const router = useRouter()

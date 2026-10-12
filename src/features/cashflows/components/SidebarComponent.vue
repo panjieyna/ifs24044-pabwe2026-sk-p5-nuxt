@@ -6,7 +6,7 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'close'): void
+  close: []
 }>()
 
 const route = useRoute()
@@ -34,8 +34,7 @@ const isActive = (path: string) => {
     ></div>
 
     <!-- Sidebar Container -->
-    <aside
-      role="region"
+    <section
       :class="[
         'fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-slate-200 bg-white transition-transform duration-200 ease-in-out lg:static lg:translate-x-0',
         isOpen ? 'translate-x-0' : '-translate-x-full',
@@ -87,6 +86,6 @@ const isActive = (path: string) => {
           <p class="mt-0.5">Versi 1.0 SPA</p>
         </div>
       </div>
-    </aside>
+    </section>
   </div>
 </template>

@@ -66,21 +66,21 @@ async function handleResetAll() {
 function computeMetrics() {
   const s = store.stats
   const net =
-    s?.cashflow !== undefined
-      ? s.cashflow
-      : (s?.total_inflow || 0) - (s?.total_outflow || 0)
+    s?.cashflow === undefined
+      ? (s?.total_inflow || 0) - (s?.total_outflow || 0)
+      : s.cashflow
   const cash =
-    s?.cash !== undefined
-      ? s.cash
-      : (s?.total_inflow_cash || 0) - (s?.total_outflow_cash || 0)
+    s?.cash === undefined
+      ? (s?.total_inflow_cash || 0) - (s?.total_outflow_cash || 0)
+      : s.cash
   const savings =
-    s?.savings !== undefined
-      ? s.savings
-      : (s?.total_inflow_savings || 0) - (s?.total_outflow_savings || 0)
+    s?.savings === undefined
+      ? (s?.total_inflow_savings || 0) - (s?.total_outflow_savings || 0)
+      : s.savings
   const loans =
-    s?.loans !== undefined
-      ? s.loans
-      : (s?.total_inflow_loans || 0) - (s?.total_outflow_loans || 0)
+    s?.loans === undefined
+      ? (s?.total_inflow_loans || 0) - (s?.total_outflow_loans || 0)
+      : s.loans
   return {
     net,
     totalInflow: s?.total_inflow || 0,

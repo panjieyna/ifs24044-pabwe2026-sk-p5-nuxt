@@ -115,22 +115,16 @@ describe('DetailPage', () => {
     expect(mockPush).toHaveBeenCalledWith('/')
   })
 
-  it('closes change modal', async () => {
-  const { getByRole } = renderWithProviders(DetailPage)
-  const store = useCashFlowsStore()
-  store.isLoading = false
-  store.cashFlow = mockCashFlow
-  await nextTick()
+  it('opens change modal', async () => {
+    const { getByRole } = renderWithProviders(DetailPage)
+    const store = useCashFlowsStore()
+    store.isLoading = false
+    store.cashFlow = mockCashFlow
+    await nextTick()
 
-  await fireEvent.click(getByRole('button', { name: 'Ubah' }))
-  await nextTick()
-  const backdrop = document.querySelector('[data-testid="change-modal-backdrop"]')
-  expect(backdrop).toBeTruthy()
-  await fireEvent.click(backdrop!)
-  await nextTick()
-  // setelah close, backdrop hilang atau dialog tertutup
-  expect(document.querySelector('[data-testid="change-modal-backdrop"]')).toBeFalsy()
-})
+    await fireEvent.click(getByRole('button', { name: 'Ubah' }))
+    await nextTick()
+  })
 
   it('handles delete confirmed success', async () => {
     const { getByRole } = renderWithProviders(DetailPage)
@@ -296,9 +290,9 @@ describe('DetailPage', () => {
     await fireEvent.click(getByRole('button', { name: 'Ubah' }))
     await nextTick()
     const backdrop = document.querySelector('[data-testid="change-modal-backdrop"]')
-    if (backdrop) {
-      await fireEvent.click(backdrop)
-    }
+    expect(backdrop).toBeTruthy()
+    await fireEvent.click(backdrop!)
     await nextTick()
+    expect(document.querySelector('[data-testid="change-modal-backdrop"]')).toBeFalsy()
   })
 })

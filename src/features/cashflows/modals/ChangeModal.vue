@@ -90,8 +90,7 @@ async function submit() {
     <!-- Modal Box -->
     <div
       class="relative z-10 w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto"
-      role="dialog"
-      aria-modal="true"
+      role="document"
       aria-labelledby="change-modal-title"
     >
       <div class="flex items-center justify-between pb-4 border-b border-slate-100">
@@ -112,8 +111,8 @@ async function submit() {
 
       <form class="space-y-4 mt-4" novalidate @submit.prevent="submit">
         <!-- Tipe Transaksi -->
-        <div>
-          <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Tipe Transaksi</label>
+        <fieldset class="border-0 p-0 m-0">
+          <legend class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Tipe Transaksi</legend>
           <div class="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -140,7 +139,7 @@ async function submit() {
               - Pengeluaran (Outflow)
             </button>
           </div>
-        </div>
+        </fieldset>
 
         <!-- Sumber Dana -->
         <div>
